@@ -77,6 +77,7 @@ class TPCHGenerator(Generator):
         self._create_schemas(connections)
         self._load_table_data(connections)
         self._create_keys(connections)
+        self._create_indexes(connections)
 
         for c in connections:
             c.close()
@@ -112,6 +113,7 @@ class TPCHGenerator(Generator):
 
         shutil.copy(f'{self.dbgen_path}/dss.ddl', f'{self.data_path}/schema/dss.ddl')
         shutil.copy(f'{self.root_dir}/schema_keys.sql', f'{self.data_path}/schema/schema_keys.sql')
+        shutil.copy(f'{self.root_dir}/indexes.sql', f'{self.data_path}/schema/indexes.sql')
     
     def _move_query_templates(self):
         existing_templates = glob.glob(f'{self.dbgen_path}/queries/*.sql')
@@ -157,6 +159,13 @@ class TPCHGenerator(Generator):
         for c in connections:
             with c.conn().cursor() as cur:
                 with open(f'{self.data_path}/schema/schema_keys.sql', 'r') as infile:
+                    cur.execute(infile.read())
+    
+    def _create_indexes(self, connections: list[Connection]):
+        logging.info('creating indexes on foreign keys')
+        for c in connections:
+            with c.conn().cursor() as cur:
+                with open(f'{self.data_path}/schema/indexes.sql', 'r') as infile:
                     cur.execute(infile.read())
     
     def _format_table_data(self):

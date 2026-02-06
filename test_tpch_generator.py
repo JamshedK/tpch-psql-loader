@@ -6,8 +6,12 @@ from tpch_generator import TPCHGenerator
 
 # Configure logging to see what's happening
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('tpch_test.log'),  # Save to file
+        logging.StreamHandler()                 # Also print to console
+    ]
 )
 
 def test_tpch_data_loading():
@@ -26,7 +30,7 @@ def test_tpch_data_loading():
         id=0,
         hostname='localhost',
         port='5432',
-        dbname='postgres',
+        dbname='tpch_1_template',
         user='postgres',
         password='123456'
     )
